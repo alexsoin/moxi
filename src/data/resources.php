@@ -1,0 +1,66 @@
+<?php
+
+return [
+	'web' => [
+		'service' => [
+			'pagetitle' => 'service',
+			'template' => 0,
+			'hidemenu' => true,
+			'published' => false,
+			'richtext' => false,
+			'searchable' => false,
+			'resources' => [
+				'401' => [
+					'menutitle' => '401',
+					'pagetitle' => 'Доступ запрещен',
+					'template' => 0,
+					'hidemenu' => true,
+					'richtext' => false,
+					'searchable' => false,
+					'uri' => '401',
+					'uri_override' => true,
+				],
+				'404' => [
+					'menutitle' => '404',
+					'pagetitle' => 'Страница не найдена',
+					'template' => 0,
+					'hidemenu' => true,
+					'richtext' => false,
+					'searchable' => false,
+					'uri' => '404',
+					'uri_override' => true,
+				],
+				'503' => [
+					'menutitle' => '503',
+					'pagetitle' => 'Сайт не доступен',
+					'template' => 0,
+					'hidemenu' => true,
+					'richtext' => false,
+					'searchable' => false,
+					'uri' => '503',
+					'uri_override' => true,
+				],
+				'sitemap' => [
+					'pagetitle' => 'sitemap',
+					'template' => 0,
+					'hidemenu' => true,
+					'richtext' => false,
+					'searchable' => false,
+					'content_type' => 2,
+					'uri' => 'sitemap.xml',
+					'uri_override' => true,
+				],
+				'robots' => [
+					'pagetitle' => 'robots.txt',
+					'template' => 0,
+					'hidemenu' => true,
+					'richtext' => false,
+					'searchable' => false,
+					'content_type' => 3,
+					'uri' => 'robots.txt',
+					'uri_override' => true,
+				],
+			],
+		],
+	],
+];
