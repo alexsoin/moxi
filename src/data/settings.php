@@ -43,5 +43,6 @@ return [
 
 	'zoomx_cache_event_map' => 0,
 	'zoomx_file_snippets_path' => '{core_path}elements/zoomx/snippets/',
+	'zoomx_smarty_custom_plugin_dir' => '{core_path}elements/zoomx/plugins/',
 	'zoomx_template_dir' => '{core_path}elements/zoomx/templates/',
 ];
