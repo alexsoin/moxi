@@ -49,13 +49,13 @@ class MoxiCLI extends MoxiPack
 			$this->log("Настройка отменена!");
 		}
 
-		$isRemoveApp = MoxiHelp::prompt("Удалить папку zenpack?[Y/n]: ");
+		$isRemoveApp = MoxiHelp::prompt("Удалить папку moxi?[Y/n]: ");
 
 		if(strtolower($isRemoveApp) === "y" || $isRemoveApp === "") {
 			$this->removeApp();
 		} else {
 			$this->log("Moxi не удалён!");
-			$this->log("Не рекомендуется оставлять пакет настройки Moxi в открытом доступе на сайте после установке. Удалите папке zenpack самостоятельно!", "warning");
+			$this->log("Не рекомендуется оставлять пакет настройки Moxi в открытом доступе на сайте после установке. Удалите папке moxi самостоятельно!", "warning");
 		}
 	}
 
