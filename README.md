@@ -1,6 +1,6 @@
 # MOXI - инструмент для быстрой настройки Modx Revo после установки
 
-![moxii-logo](https://github.com/alexsoin/moxi/assets/3787132/a9f6c7af-7f71-4cff-af7a-e984595eb3ce)
+![moxii-logo](https://github.com/alexsoin/moxi/assets/3787132/701f2057-bfd2-44ee-b789-6e2551e68ca3)
 
 ## Быстрый старт
 
