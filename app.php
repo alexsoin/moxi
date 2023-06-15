@@ -65,7 +65,7 @@ class MoxiHelp
 	{
 		echo MoxiHelp::colorize($message, "green");
 
-		if($isPassword) {
+		if($isPassword && !empty(shell_exec('command -v stty'))) {
 			system('stty -echo');
 			$password = trim(fgets(STDIN));
 			system('stty echo');
