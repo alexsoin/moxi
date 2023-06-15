@@ -101,5 +101,5 @@ php7.4 ./cli.php
 
 ## Ссылки
 
-- [О инструменте](https://zencod.ru/articles/moxi/)
+- [Описание инструмента](https://zencod.ru/articles/moxi/)
 - [Кастомизация](https://zencod.ru/articles/moxi-settings/)
