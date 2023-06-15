@@ -10,7 +10,7 @@
 Подключаемся через `ssh`, переходим в корень сайта и клонируем [репозиторий](https://github.com/alexsoin/moxi)
 
 ```bash
-git clone git@github.com:alexsoin/moxi.git
+git clone https://github.com/alexsoin/moxi.git
 ```
 
 ### WEB
