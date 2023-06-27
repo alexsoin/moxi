@@ -187,7 +187,7 @@ class MoxiModx
 		$v_modx_max = 3;
 
 		if($v_modx_now < $v_modx_min || $v_modx_now >= $v_modx_max) {
-			return [ "success" => false, "message" => "Установлен modx версии $v_modx_now. Поддерживаются версии modx с $v_modx_minдо $v_modx_max" ];
+			return [ "success" => false, "message" => "Установлен modx версии $v_modx_now. Поддерживаются версии modx с $v_modx_min до $v_modx_max" ];
 		}
 
 		return [ "success" => true ];
