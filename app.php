@@ -65,7 +65,7 @@ class MoxiHelp
 	{
 		echo MoxiHelp::colorize($message, "green");
 
-		if($isPassword && !empty(shell_exec('command -v stty'))) {
+		if ($isPassword && !empty(shell_exec('command -v stty'))) {
 			system('stty -echo');
 			$password = trim(fgets(STDIN));
 			system('stty echo');
@@ -84,20 +84,20 @@ class MoxiHelp
 	static function steps()
 	{
 		return [
-			["name" => "providers", "desc" => "Добавление поставщиков дополнений", ],
-			["name" => "addons", "desc" => "Установка дополнений", ],
-			["name" => "copyCore", "desc" => "Копирование папки core", ],
-			["name" => "templates", "desc" => "Добавление шаблонов", ],
-			["name" => "resources", "desc" => "Добавление ресурсов", ],
-			["name" => "settings", "desc" => "Изменение настроек", ],
-			["name" => "snippets", "desc" => "Добавление сниппетов", ],
-			["name" => "plugins", "desc" => "Добавление плагинов", ],
-			["name" => "tvs", "desc" => "Добавление дополнительных полей", ],
-			["name" => "clientConfig", "desc" => "Настройка clientConfig", ],
-			["name" => "managerCustomize", "desc" => "Настройка панели администрирования", ],
-			["name" => "renameHtaccess", "desc" => "Переименовывание ht.access в .htaccess", ],
-			["name" => "removeChangelog", "desc" => "Удаление changelog", ],
-			["name" => "clearCache", "desc" => "Очистка кэша", ],
+			["name" => "providers", "desc" => "Добавление поставщиков дополнений"],
+			["name" => "addons", "desc" => "Установка дополнений"],
+			["name" => "copyCore", "desc" => "Копирование папки core"],
+			["name" => "templates", "desc" => "Добавление шаблонов"],
+			["name" => "resources", "desc" => "Добавление ресурсов"],
+			["name" => "settings", "desc" => "Изменение настроек"],
+			["name" => "snippets", "desc" => "Добавление сниппетов"],
+			["name" => "plugins", "desc" => "Добавление плагинов"],
+			["name" => "tvs", "desc" => "Добавление дополнительных полей"],
+			["name" => "clientConfig", "desc" => "Настройка clientConfig"],
+			["name" => "managerCustomize", "desc" => "Настройка панели администрирования"],
+			["name" => "renameHtaccess", "desc" => "Переименовывание ht.access в .htaccess"],
+			["name" => "removeChangelog", "desc" => "Удаление changelog"],
+			["name" => "clearCache", "desc" => "Очистка кэша"],
 		];
 	}
 
@@ -111,11 +111,11 @@ class MoxiHelp
 		$v_php_now = phpversion();
 		$v_php_min = 7.4;
 
-		if($v_php_now < $v_php_min) {
-			return [ "success" => false, "message" => "Вы запустили скрипт с php версией $v_php_now. Минимальная версия php для запуска $v_php_min" ];
+		if ($v_php_now < $v_php_min) {
+			return ["success" => false, "message" => "Вы запустили скрипт с php версией $v_php_now. Минимальная версия php для запуска $v_php_min"];
 		}
 
-		return [ "success" => true ];
+		return ["success" => true];
 	}
 }
 
@@ -134,10 +134,11 @@ class MoxiModx
 	 *
 	 * Инициализирует объект modX и подключает необходимые файлы.
 	 */
-	public function __construct() {
+	public function __construct()
+	{
 		$this->path["site"] = dirname(dirname(__FILE__)) . '/';
 		require_once $this->path["site"] . 'config.core.php';
-		require_once $this->path["site"] .'core/model/modx/modx.class.php';
+		require_once $this->path["site"] . 'core/model/modx/modx.class.php';
 
 		/** @var modX $this->modx */
 		$this->modx = new modX();
@@ -154,7 +155,7 @@ class MoxiModx
 	 */
 	public function checkAdmin($username = null, $password = null)
 	{
-		if($username) {
+		if ($username) {
 			$user = $this->modx->getObject('modUser', ['username' => $username]);
 
 			if ($user && $user->passwordMatches($password)) {
@@ -184,13 +185,13 @@ class MoxiModx
 	{
 		$v_modx_now = $this->modx->getOption('settings_version');
 		$v_modx_min = 2.7;
-		$v_modx_max = 3;
+		$v_modx_max = 4;
 
-		if($v_modx_now < $v_modx_min || $v_modx_now >= $v_modx_max) {
-			return [ "success" => false, "message" => "Установлен modx версии $v_modx_now. Поддерживаются версии modx с $v_modx_minдо $v_modx_max" ];
+		if ($v_modx_now < $v_modx_min || $v_modx_now >= $v_modx_max) {
+			return ["success" => false, "message" => "Установлен modx версии $v_modx_now. Поддерживаются версии modx с $v_modx_min до $v_modx_max"];
 		}
 
-		return [ "success" => true ];
+		return ["success" => true];
 	}
 }
 
@@ -210,8 +211,11 @@ class MoxiPack extends MoxiModx
 	/** @var array $steps Порядок выполнения операций */
 	public $steps = [];
 
+	/** @var bool $isAdmin Является ли пользователь администратором */
+	public $isAdmin = false;
+
 	/** @var array $logs Лог сообщений */
-	public $logs = [ "info" => [], "error" => [], "warning" => [], ];
+	public $logs = ["info" => [], "error" => [], "warning" => [],];
 
 	/**
 	 * Конструктор класса MoxiPack.
@@ -224,7 +228,7 @@ class MoxiPack extends MoxiModx
 		parent::__construct();
 		$this->isAdmin = $this->checkAdmin($username, $password);
 
-		if($this->isAdmin !== true) {
+		if ($this->isAdmin !== true) {
 			return;
 		}
 
@@ -266,7 +270,7 @@ class MoxiPack extends MoxiModx
 	 */
 	public function setSiteName($site_name)
 	{
-		if(mb_strlen($site_name) === 0) {
+		if (mb_strlen($site_name) === 0) {
 			$this->log("Название сайта не изменено");
 			return false;
 		}
@@ -287,7 +291,7 @@ class MoxiPack extends MoxiModx
 	 */
 	public function setManagerName($newNameManager)
 	{
-		if(mb_strlen($newNameManager) === 0) {
+		if (mb_strlen($newNameManager) === 0) {
 			$this->log("Название сайта не изменено");
 			return false;
 		}
@@ -298,15 +302,15 @@ class MoxiPack extends MoxiModx
 		$itemsRoot = scandir($basePath);
 		$managerUri = str_replace($basePath, "", $managerPath);
 		$managerUriNew = "$newNameManager/";
-		$configFilePath = $corePath."config/config.inc.php";
+		$configFilePath = $corePath . "config/config.inc.php";
 		$managerPathNew = str_replace($managerUri, $managerUriNew, $managerPath);
 
-		if(in_array($newNameManager, $itemsRoot)) {
+		if (in_array($newNameManager, $itemsRoot)) {
 			$this->log("Нельзя переименовать панель управления. Данная директория занята.", "error");
 			return false;
 		}
 
-		if(!file_exists($configFilePath)) {
+		if (!file_exists($configFilePath)) {
 			$this->log("Файл конфига не найден", "error");
 			return false;
 		}
@@ -359,12 +363,12 @@ class MoxiPack extends MoxiModx
 		$dir_from = $this->path["src"]["content"] . "core/";
 		$dir_to = $this->modx->getOption('core_path');
 
-		if(!is_dir($dir_from)) {
+		if (!is_dir($dir_from)) {
 			$this->log("Папка '$dir_from' не найдена", "error");
 			return;
 		}
 
-		if(!is_dir($dir_to)) {
+		if (!is_dir($dir_to)) {
 			$this->log("Папка '$dir_to' не найдена", "error");
 			return;
 		}
@@ -469,8 +473,8 @@ class MoxiPack extends MoxiModx
 			'503' => 'site_unavailable_page'
 		];
 
-		foreach($errors_pages as $uri_page => $system_setting) {
-			if($res = $this->modx->getObject('modResource', ['uri' => $uri_page]) ) {
+		foreach ($errors_pages as $uri_page => $system_setting) {
+			if ($res = $this->modx->getObject('modResource', ['uri' => $uri_page])) {
 				$settings[$system_setting] = $res->get('id');
 			}
 		}
@@ -515,12 +519,12 @@ class MoxiPack extends MoxiModx
 		}
 
 		foreach ($snippets as $filename => $data) {
-			if(!file_exists($this->path["src"]["snippets"] . $filename . '.php')) {
+			if (!file_exists($this->path["src"]["snippets"] . $filename . '.php')) {
 				$this->log("Сниппет '$filename' не найден", "error");
 				continue;
 			}
 
-			if($this->modx->getObject('modSnippet', ['name' => $data['name']])) {
+			if ($this->modx->getObject('modSnippet', ['name' => $data['name']])) {
 				$this->log("Сниппет '$filename' уже существует", "warning");
 				continue;
 			}
@@ -554,12 +558,12 @@ class MoxiPack extends MoxiModx
 		}
 
 		foreach ($plugins as $filename => $data) {
-			if(!file_exists($this->path["src"]["plugins"] . $filename . '.php')) {
+			if (!file_exists($this->path["src"]["plugins"] . $filename . '.php')) {
 				$this->log("Плагин '$filename' не найден", "error");
 				continue;
 			}
 
-			if($this->modx->getObject('modPlugin', ['name' => $data['name']])) {
+			if ($this->modx->getObject('modPlugin', ['name' => $data['name']])) {
 				$this->log("Плагин '$filename' уже существует", "warning");
 				continue;
 			}
@@ -619,7 +623,7 @@ class MoxiPack extends MoxiModx
 		}
 
 		foreach ($templates as $filename => $data) {
-			if($this->modx->getObject('modTemplate', ['templatename' => $data['name']])) {
+			if ($this->modx->getObject('modTemplate', ['templatename' => $data['name']])) {
 				$this->log("Шаблон '$filename' уже существует", "warning");
 				continue;
 			}
@@ -653,7 +657,7 @@ class MoxiPack extends MoxiModx
 
 		$addeds = [];
 		foreach ($tvs as $data) {
-			if($tv = $this->modx->getObject('modTemplateVar', ['name' => $data['name']])) {
+			if ($tv = $this->modx->getObject('modTemplateVar', ['name' => $data['name']])) {
 				$this->log("ТВ '{$data['name']}' уже существует", "warning");
 				continue;
 			}
@@ -691,11 +695,11 @@ class MoxiPack extends MoxiModx
 	{
 		$path = $this->modx->getOption('clientconfig.core_path', null, $this->modx->getOption('core_path') . 'components/clientconfig/');
 		$path .= 'model/clientconfig/';
-		$clientConfig = $this->modx->getService('clientconfig','ClientConfig', $path);
+		$clientConfig = $this->modx->getService('clientconfig', 'ClientConfig', $path);
 
 		if ($clientConfig instanceof ClientConfig && is_array($this->data["clientConfig"])) {
 			foreach ($this->data["clientConfig"] as $ccGroupKey => $ccGroup) {
-				if(!$group = $this->modx->getObject('cgGroup', [ 'label' => $ccGroup['label'] ])) {
+				if (!$group = $this->modx->getObject('cgGroup', ['label' => $ccGroup['label']])) {
 					$group = $this->modx->newObject('cgGroup');
 					$group->set('label', $ccGroup['label']);
 					$group->set('description', $ccGroup['description']);
@@ -704,7 +708,7 @@ class MoxiPack extends MoxiModx
 				}
 
 				foreach ($ccGroup['items'] as $idx => $data) {
-					if(!$setting = $this->modx->getObject('cgSetting', [ 'key' => $data['key'] ])) {
+					if (!$setting = $this->modx->getObject('cgSetting', ['key' => $data['key']])) {
 						$setting = $this->modx->newObject('cgSetting');
 						$setting->fromArray(array_merge([
 							'description' => '',
@@ -779,7 +783,7 @@ class MoxiPack extends MoxiModx
 			}
 		}
 
-		if ($this->modx->getObject('transport.modTransportPackage', [ 'package_name' => 'MIGX', 'installed:IS NOT' => null ])) {
+		if ($this->modx->getObject('transport.modTransportPackage', ['package_name' => 'MIGX', 'installed:IS NOT' => null])) {
 			$set_list = [];
 			$set = ['profile' => $profile->id];
 			if (!$set_list['update_set'] = $this->modx->getObject('modFormCustomizationSet', array_merge(['action' => 'resource/update', 'constraint' => 0, 'constraint_field' => 'parent', 'constraint_class' => 'modResource'], $set))) {
@@ -872,13 +876,12 @@ class MoxiPack extends MoxiModx
 	{
 		if (ini_get('allow_url_fopen')) {
 			$file = @file_get_contents($src);
-		}
-		else if (function_exists('curl_init')) {
+		} else if (function_exists('curl_init')) {
 			$ch = curl_init();
 			curl_setopt($ch, CURLOPT_URL, $src);
 			curl_setopt($ch, CURLOPT_HEADER, 0);
 			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_TIMEOUT,180);
+			curl_setopt($ch, CURLOPT_TIMEOUT, 180);
 			$safeMode = @ini_get('safe_mode');
 			$openBasedir = @ini_get('open_basedir');
 			if (empty($safeMode) && empty($openBasedir)) {
@@ -887,8 +890,7 @@ class MoxiPack extends MoxiModx
 
 			$file = curl_exec($ch);
 			curl_close($ch);
-		}
-		else {
+		} else {
 			return false;
 		}
 		file_put_contents($dst, $file);
@@ -905,7 +907,7 @@ class MoxiPack extends MoxiModx
 	 */
 	protected function _installPackage($packageName, $provider_name)
 	{
-		if($installedPackage = $this->modx->getObject('transport.modTransportPackage', [ 'package_name' => $packageName, 'installed:IS NOT' => null ])) {
+		if ($installedPackage = $this->modx->getObject('transport.modTransportPackage', ['package_name' => $packageName, 'installed:IS NOT' => null])) {
 			$this->log("Дополнение '{$packageName}' уже было установлено", "warning");
 			return;
 		}
@@ -916,9 +918,9 @@ class MoxiPack extends MoxiModx
 
 		$provider->getClient();
 		$this->modx->getVersionData();
-		$productVersion = $this->modx->version['code_name'].'-'.$this->modx->version['full_version'];
+		$productVersion = $this->modx->version['code_name'] . '-' . $this->modx->version['full_version'];
 
-		$response = $provider->request('package','GET', [
+		$response = $provider->request('package', 'GET', [
 			'supports' => $productVersion,
 			'query' => $packageName
 		]);
@@ -927,20 +929,20 @@ class MoxiPack extends MoxiModx
 
 			$foundPackages = simplexml_load_string($response->response);
 
-			foreach($foundPackages as $foundPackage) {
+			foreach ($foundPackages as $foundPackage) {
 				/* @var modTransportPackage $foundPackage */
-				if($foundPackage->name == $packageName) {
-					$sig = explode('-',$foundPackage->signature);
-					$versionSignature = explode('.',$sig[1]);
+				if ($foundPackage->name == $packageName) {
+					$sig = explode('-', $foundPackage->signature);
+					$versionSignature = explode('.', $sig[1]);
 					$url = $foundPackage->location;
 
-					if (!$this->_downloadPackage($url, $this->modx->getOption('core_path').'packages/'.$foundPackage->signature.'.transport.zip')) {
+					if (!$this->_downloadPackage($url, $this->modx->getOption('core_path') . 'packages/' . $foundPackage->signature . '.transport.zip')) {
 						$this->log("$packageName не удалось скачать", "error");
 						return;
 					}
 
 					$package = $this->modx->newObject('transport.modTransportPackage');
-					$package->set('signature',$foundPackage->signature);
+					$package->set('signature', $foundPackage->signature);
 					$package->fromArray([
 						'created' => date('Y-m-d h:i:s'),
 						'updated' => null,
@@ -955,30 +957,28 @@ class MoxiPack extends MoxiModx
 					]);
 
 					if (!empty($sig[2])) {
-						$r = preg_split('/([0-9]+)/',$sig[2],-1,PREG_SPLIT_DELIM_CAPTURE);
+						$r = preg_split('/([0-9]+)/', $sig[2], -1, PREG_SPLIT_DELIM_CAPTURE);
 
 						if (is_array($r) && !empty($r)) {
-							$package->set('release',$r[0]);
-							$package->set('release_index',(isset($r[1]) ? $r[1] : '0'));
+							$package->set('release', $r[0]);
+							$package->set('release_index', (isset($r[1]) ? $r[1] : '0'));
 						} else {
-							$package->set('release',$sig[2]);
+							$package->set('release', $sig[2]);
 						}
 					}
 
 					if ($package->save() && $package->install()) {
 						$this->log("$packageName установлено");
 						return;
-					}
-					else {
+					} else {
 						$this->log("$packageName не удалось установить", "error");
 						return;
 					}
 					break;
 				}
 			}
-		}
-		else {
-			$this->log("$package не найдено", "error");
+		} else {
+			$this->log("$packageName не найдено", "error");
 			return;
 		}
 		return true;
@@ -996,8 +996,8 @@ class MoxiPack extends MoxiModx
 			$file = trim(file_get_contents($filename));
 
 			return preg_match('#\<\?php(.*)#is', $file, $data)
-					? rtrim(rtrim(trim(@$data[1]), '?>'))
-					: $file;
+				? rtrim(rtrim(trim(@$data[1]), '?>'))
+				: $file;
 		}
 
 		return '';
@@ -1018,7 +1018,7 @@ class MoxiPack extends MoxiModx
 
 		$content = file_exists($content_path) ? file_get_contents($content_path) : '';
 
-		if($resource = $this->modx->getObject('modResource', ['pagetitle' => $data["pagetitle"]]) ) {
+		if ($resource = $this->modx->getObject('modResource', ['pagetitle' => $data["pagetitle"]])) {
 			$this->log("Ресурс '{$data['pagetitle']}' уже существует", "warning");
 		} else {
 			/** @var modResource $resource */
@@ -1066,7 +1066,7 @@ class MoxiPack extends MoxiModx
 	{
 		$cacheManager = $this->modx->getCacheManager();
 
-		if ($cacheManager && $cacheManager->deleteTree($this->path["app"],true,false,false)) {
+		if ($cacheManager && $cacheManager->deleteTree($this->path["app"], true, false, false)) {
 			$this->log("Moxi успешно удалён");
 		} else {
 			$this->log("Не удалось удалить Moxi", "error");
@@ -1083,15 +1083,15 @@ class MoxiPack extends MoxiModx
 	protected function log($message, $level = "info")
 	{
 		$types = [
-			"info" => [ "color" => "blue", "desc" => "" ],
-			"error" => [ "color" => "red", "desc" => "ОШИБКА!!!" ],
-			"warning" => [ "color" => "yellow", "desc" => "ВНИМАНИЕ!!!" ],
+			"info" => ["color" => "blue", "desc" => ""],
+			"error" => ["color" => "red", "desc" => "ОШИБКА!!!"],
+			"warning" => ["color" => "yellow", "desc" => "ВНИМАНИЕ!!!"],
 		];
-		$typeNow = $types[$type] ?: $types["info"];
+		$typeNow = $types[$level] ?: $types["info"];
 
 		$this->logs[$level][] = $message;
 
-		if($this->mode === "cli") {
+		if ($this->mode === "cli") {
 			echo MoxiHelp::colorize("{$message}\n", $typeNow["color"]);
 		}
 	}
