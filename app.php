@@ -866,39 +866,6 @@ class MoxiPack extends MoxiModx
 	}
 
 	/**
-	 * Скачивает дополнение с заданного URL и сохраняет его на диск.
-	 *
-	 * @param string $src URL-адрес дополнения.
-	 * @param string $dst Путь для сохранения дополнения.
-	 * @return bool Возвращает true в случае успешного сохранения дополнения, иначе false.
-	 */
-	protected function _downloadPackage($src, $dst)
-	{
-		if (ini_get('allow_url_fopen')) {
-			$file = @file_get_contents($src);
-		} else if (function_exists('curl_init')) {
-			$ch = curl_init();
-			curl_setopt($ch, CURLOPT_URL, $src);
-			curl_setopt($ch, CURLOPT_HEADER, 0);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($ch, CURLOPT_TIMEOUT, 180);
-			$safeMode = @ini_get('safe_mode');
-			$openBasedir = @ini_get('open_basedir');
-			if (empty($safeMode) && empty($openBasedir)) {
-				curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-			}
-
-			$file = curl_exec($ch);
-			curl_close($ch);
-		} else {
-			return false;
-		}
-		file_put_contents($dst, $file);
-
-		return file_exists($dst);
-	}
-
-	/**
 	 * Устанавливает дополнение MODX.
 	 *
 	 * @param string $packageName Имя дополнения.
@@ -907,81 +874,46 @@ class MoxiPack extends MoxiModx
 	 */
 	protected function _installPackage($packageName, $provider_name)
 	{
-		if ($installedPackage = $this->modx->getObject('transport.modTransportPackage', ['package_name' => $packageName, 'installed:IS NOT' => null])) {
+		if ($this->modx->getObject('transport.modTransportPackage', ['package_name' => $packageName, 'installed:IS NOT' => null])) {
 			$this->log("Дополнение '{$packageName}' уже было установлено", "warning");
-			return;
+			return false;
 		}
 
 		if (!$provider_name || !$provider = $this->modx->getObject('transport.modTransportProvider', ['service_url:LIKE' => '%' . $provider_name . '%'])) {
 			$provider = $this->modx->getObject('transport.modTransportProvider', 1);
 		}
 
-		$provider->getClient();
-		$this->modx->getVersionData();
 		$productVersion = $this->modx->version['code_name'] . '-' . $this->modx->version['full_version'];
+		$finedPackages = $provider->find([ 'supports' => $productVersion, 'query' => $packageName ]);
+		$instPackage = $finedPackages && $finedPackages[1][0] ? $finedPackages[1][0] : false;
 
-		$response = $provider->request('package', 'GET', [
-			'supports' => $productVersion,
-			'query' => $packageName
-		]);
-
-		if (!empty($response)) {
-
-			$foundPackages = simplexml_load_string($response->response);
-
-			foreach ($foundPackages as $foundPackage) {
-				/* @var modTransportPackage $foundPackage */
-				if ($foundPackage->name == $packageName) {
-					$sig = explode('-', $foundPackage->signature);
-					$versionSignature = explode('.', $sig[1]);
-					$url = $foundPackage->location;
-
-					if (!$this->_downloadPackage($url, $this->modx->getOption('core_path') . 'packages/' . $foundPackage->signature . '.transport.zip')) {
-						$this->log("$packageName не удалось скачать", "error");
-						return;
-					}
-
-					$package = $this->modx->newObject('transport.modTransportPackage');
-					$package->set('signature', $foundPackage->signature);
-					$package->fromArray([
-						'created' => date('Y-m-d h:i:s'),
-						'updated' => null,
-						'state' => 1,
-						'workspace' => 1,
-						'provider' => $provider->id,
-						'source' => $foundPackage->signature . '.transport.zip',
-						'package_name' => $packageName,
-						'version_major' => $versionSignature[0],
-						'version_minor' => !empty($versionSignature[1]) ? $versionSignature[1] : 0,
-						'version_patch' => !empty($versionSignature[2]) ? $versionSignature[2] : 0,
-					]);
-
-					if (!empty($sig[2])) {
-						$r = preg_split('/([0-9]+)/', $sig[2], -1, PREG_SPLIT_DELIM_CAPTURE);
-
-						if (is_array($r) && !empty($r)) {
-							$package->set('release', $r[0]);
-							$package->set('release_index', (isset($r[1]) ? $r[1] : '0'));
-						} else {
-							$package->set('release', $sig[2]);
-						}
-					}
-
-					if ($package->save() && $package->install()) {
-						$this->log("$packageName установлено");
-						return;
-					} else {
-						$this->log("$packageName не удалось установить", "error");
-						return;
-					}
-					break;
-				}
-			}
-		} else {
-			$this->log("$packageName не найдено", "error");
-			return;
+		if (!$instPackage) {
+			$this->log("Дополнение '{$packageName}' не найдено в репозитории {$provider->name}", "error");
+			return false;
 		}
-		return true;
+
+		// Скачиваем пакет
+		$download = $provider->transfer($instPackage['signature'], null, ['location' => $instPackage['location']]);
+		if (!$download) {
+			$this->log("Дополнение '{$packageName}' не удалось скачать", "error");
+			return false;
+		}
+
+		// Установка пакета
+		$package = $this->modx->getObject('transport.modTransportPackage', ['signature' => $instPackage['signature']]);
+
+		if (!$package) {
+			$this->log("Дополнение '{$packageName}' не найдено при установке", "error");
+			return false;
+		}
+
+		if ($package->save() && $package->install()) {
+			$this->log("Дополнение '{$packageName}' установлено");
+			return true;
+		}
+
+		$this->log("Дополнение '{$packageName}' не удалось установить", "error");
+		return false;
 	}
 
 	/**
