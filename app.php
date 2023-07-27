@@ -883,12 +883,17 @@ class MoxiPack extends MoxiModx
 			$provider = $this->modx->getObject('transport.modTransportProvider', 1);
 		}
 
-		$productVersion = $this->modx->version['code_name'] . '-' . $this->modx->version['full_version'];
-		$finedPackages = $provider->find([ 'supports' => $productVersion, 'query' => $packageName ]);
-		$instPackage = $finedPackages && $finedPackages[1][0] ? $finedPackages[1][0] : false;
+		$finedPackages = $provider->find([ 'query' => $packageName ]);
+		$filteredPackages = array_filter($finedPackages[1], fn($item) => strtolower($item['name']) === strtolower($packageName));
+		$instPackage = $filteredPackages ? reset($filteredPackages) : false;
 
 		if (!$instPackage) {
 			$this->log("Дополнение '{$packageName}' не найдено в репозитории {$provider->name}", "error");
+			return false;
+		}
+
+		if($instPackage['minimum_supports'] > $this->modx->version['full_version']) {
+			$this->log("Дополнение '{$packageName}' требует минимальную версию системы {$instPackage['minimum_supports']}", "error");
 			return false;
 		}
 
