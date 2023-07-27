@@ -83,7 +83,17 @@ const sendData = async (dataList: IList) => {
 	}
 
 	for (const step of listSteps.value) {
-		await processEvent(step.desc, step.name, step.name === "addons" ? params[step.name] : null);
+		if(step.name === "addons") {
+			const listAddons = params[step.name];
+			for (const provider in listAddons) {
+				const addons = listAddons[provider];
+				for (const addon of addons) {
+					await processEvent(`Установка пакета "${addon}"`, step.name, { [provider]: [addon] });
+				}
+			}
+		} else {
+			await processEvent(step.desc, step.name, null);
+		}
 	}
 
 	if (dataList.removeApp) {
