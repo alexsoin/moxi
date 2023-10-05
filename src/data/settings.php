@@ -18,7 +18,6 @@ return [
 	'default_template' => 2,
 	'link_tag_scheme' => 'abs',
 	'log_snippet_not_found' => 0,
-	'log_deprecated' => 0,
 	'publish_default' => 1,
 	'feed_modx_news_enabled' => 0,
 	'feed_modx_security_enabled' => 0,
@@ -45,4 +44,7 @@ return [
 	'zoomx_file_snippets_path' => '{core_path}elements/zoomx/snippets/',
 	'zoomx_smarty_custom_plugin_dir' => '{core_path}elements/zoomx/plugins/',
 	'zoomx_template_dir' => '{core_path}elements/zoomx/templates/',
+
+	'frontendmanager_frontend_position' => 'bottom',
+	'frontendmanager_contenttypes' => '1,9',
 ];

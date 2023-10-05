@@ -22,5 +22,7 @@ return [
 		'SocialNetworks',
 		'controlErrorLog',
 		'ZoomX',
+		'frontendManager',
+		'modalConsole',
 	]
 ];
