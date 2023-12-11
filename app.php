@@ -86,7 +86,7 @@ class MoxiHelp
 		return [
 			["name" => "providers", "desc" => "Добавление поставщиков дополнений"],
 			["name" => "addons", "desc" => "Установка дополнений"],
-			["name" => "copyCore", "desc" => "Копирование папки core"],
+			["name" => "copyStatic", "desc" => "Копирование папки файлов"],
 			["name" => "templates", "desc" => "Добавление шаблонов"],
 			["name" => "resources", "desc" => "Добавление ресурсов"],
 			["name" => "settings", "desc" => "Изменение настроек"],
@@ -354,14 +354,14 @@ class MoxiPack extends MoxiModx
 	}
 
 	/**
-	 * Копирует элементы директории src/core в папке core сайта
+	 * Копирует элементы директории src/static в корень сайта
 	 *
 	 * @return void
 	 */
-	public function copyCore()
+	public function copyStatic()
 	{
-		$dir_from = $this->path["src"]["content"] . "core/";
-		$dir_to = $this->modx->getOption('core_path');
+		$dir_from = $this->path["src"]["content"] . "static/";
+		$dir_to = $this->modx->getOption('base_path');
 
 		if (!is_dir($dir_from)) {
 			$this->log("Папка '$dir_from' не найдена", "error");
@@ -373,8 +373,8 @@ class MoxiPack extends MoxiModx
 			return;
 		}
 
-		$this->modx->cacheManager->copyTree($this->path["src"]["content"] . "core/", $this->modx->getOption('core_path'));
-		$this->log("Элементы директории core скопированы");
+		$this->modx->cacheManager->copyTree($this->path["src"]["content"] . "static/", $this->modx->getOption('base_path'));
+		$this->log("Элементы директории static скопированы");
 	}
 
 	/**

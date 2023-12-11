@@ -1,0 +1,13 @@
+{
+	"files.associations": {
+		"*.tpl": "fenom",
+		// "*.tpl": "modx",
+		// "*.tpl": "smarty",
+	},
+	"emmet.includeLanguages": {
+		"fenom": "html",
+		"modx": "html",
+		"smarty": "html",
+	},
+	"php.version": "7.4"
+}
